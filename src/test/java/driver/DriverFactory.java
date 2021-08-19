@@ -3,6 +3,7 @@ package driver;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -16,7 +17,7 @@ public class DriverFactory {
 
         String browser = System.getenv("BROWSER");
         browser = (browser == null) ? "CHROME": browser;
-
+        System.out.println("browser: "+browser);
         switch (browser) {
             case "IE":
                 WebDriverManager.iedriver().setup();
@@ -24,6 +25,9 @@ public class DriverFactory {
             case "FIREFOX":
                 WebDriverManager.firefoxdriver().setup();
                 return new FirefoxDriver();
+            case "EDGE":
+                WebDriverManager.edgedriver().setup();
+                return new EdgeDriver();
             case "CHROME":
             default:
                 WebDriverManager.chromedriver().setup();

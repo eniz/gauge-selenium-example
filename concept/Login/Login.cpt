@@ -1,0 +1,25 @@
+# Login with mail <mail> and password <password>
+* Enter Login with <mail> and <password>
+
+
+# Login with Wrong Username and Wrong Password Yemeksepeti
+* Login with mail "johndoe@gmail.com" and password "123456."
+
+# Login with Success Username and Wrong Password Yemeksepeti
+* Login with mail "kendiebru@gmail.com" and password "123456."
+
+# Login with Empty Username and Empty Password Yemeksepeti
+* Login with mail "" and password ""
+
+# Login with Wrong Username and Empty Password Yemeksepeti
+* Login with mail "johndoe@gmail.com" and password ""
+
+# Login with Success Username and Empty Password Yemeksepeti
+* Login with mail "kendiebru@gmail.com" and password ""
+
+# Login with Empty Username and Wrong Password Yemeksepeti
+* Login with mail "" and password "12345"
+
+# Login with Success Username and Success Password Yemeksepeti
+* Login with mail "yemeksepeticase@gmail.com" and password "Yemekspt123."
+
