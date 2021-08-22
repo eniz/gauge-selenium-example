@@ -8,15 +8,16 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import page.BasePage;
 import page.LoginPage;
 import page.HomePage;
-import page.RestaurantDetailPage;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 
 public class StepImplementation {
+    private String favRestaurantFile = "favRestaurant.txt";
+
     @Step("Go to Yemek Sepeti City Page")
     public void gotoCityPage() throws InterruptedException {
-        WebElement cityButton = Driver.webDriver.findElement(By.xpath("//a[@href='/hatay']"));
+        WebElement cityButton = Driver.webDriver.findElement(By.xpath("//a[@href='/istanbul']"));
         cityButton.click();
         Gauge.writeMessage("Page title is %s", Driver.webDriver.getTitle());
     }
@@ -31,11 +32,8 @@ public class StepImplementation {
 
     @Step("Check <Username> After Login")
     public void checkUsernameAfterLogin(String username) {
-        WebDriverWait wait = new WebDriverWait(Driver.webDriver, 10);
-        WebElement userNameInfo = wait.until(
-                ExpectedConditions.visibilityOfElementLocated(By.id("ysUserName")));
-
-        assertThat(userNameInfo.getText()).contains(username);
+        HomePage homePage = new HomePage();
+        homePage.checkUsername(username);
         Gauge.writeMessage("User logins successful...");
     }
 
@@ -51,7 +49,7 @@ public class StepImplementation {
     }
 
     @Step("Check <ErrorMessage> for <mail> null charachter login")
-    public void checkErrorMessageForNullCharachterLogin(String errorMessage, String type) {
+    public void checkErrorMessageForNullCharacterLogin(String errorMessage, String type) {
         WebDriverWait wait = new WebDriverWait(Driver.webDriver, 10);
         if(type=="mail"){
             WebElement errorMessageText = wait.until(
@@ -70,9 +68,10 @@ public class StepImplementation {
 
     @Step("Open the Yemeksepeti homepage")
     public void implementation1() {
-        String app_url = System.getenv("APP_URL");
-        Driver.webDriver.get(app_url + "/");
-        assertThat(Driver.webDriver.getTitle()).contains("Yemek Sepeti");
+        String appUrl = System.getenv("APP_URL");
+        Driver.webDriver.get(appUrl + "/");
+        String appTitle = System.getenv("APP_TITLE");
+        assertThat(Driver.webDriver.getTitle()).contains(appTitle);
     }
 
     @Step("Select city and search restaurant")
@@ -84,23 +83,51 @@ public class StepImplementation {
 
     @Step("Add favorite restaurant")
     public void addFavoriteRestaurant() throws InterruptedException {
-        RestaurantDetailPage restaurantDetailPage = new RestaurantDetailPage();
-        restaurantDetailPage.clickFavButton();
+        WebElement addFavButton = Driver.webDriver.findElement(By.cssSelector(".favorite-button.add"));
+        addFavButton.click();
 
-        Gauge.writeMessage(restaurantDetailPage.restaurantName + " to added favorite restaurants");
+        BasePage base = new BasePage();
+        String favRestaurant = base.readData(favRestaurantFile);
+
+        Gauge.captureScreenshot();
+        Gauge.writeMessage(favRestaurant + " to added favorite restaurants");
     }
 
     @Step("Check selected restaurant in favorite list")
     public void checkSelectedRestaurant() throws InterruptedException {
-        WebElement favoriteTab = Driver.webDriver.findElement(By.xpath("//*[@data-content-id='favorites']"));
-        favoriteTab.click();
+        WebElement userName = Driver.webDriver.findElement(By.xpath("//b[@id='ysUserName']"));
+        userName.click();
+
+        WebElement favoriteMenu = Driver.webDriver.findElement(By.xpath("//a[@href='/hesabim/favorilerim']"));
+        favoriteMenu.click();
+
+        BasePage base = new BasePage();
+        String favRestaurant = base.readData(favRestaurantFile);
+
+        WebDriverWait wait = new WebDriverWait(Driver.webDriver, 10);
+        WebElement favoritesElm = wait.until(
+                ExpectedConditions.visibilityOfElementLocated(By.className("favorites")));
+        assertThat(favoritesElm.getText()).contains(favRestaurant);
+        Gauge.captureScreenshot();
+        Gauge.writeMessage("Checked favorites list" + favRestaurant);
     }
 
     @Step("Remove favorite restaurant")
     public void removeSelectedRestaurant() throws InterruptedException {
+        BasePage base = new BasePage();
+        String favRestaurant = base.readData(favRestaurantFile);
 
+        WebDriverWait wait = new WebDriverWait(Driver.webDriver, 10);
+        WebElement favoritesElm = wait.until(
+                ExpectedConditions.visibilityOfElementLocated(By.className("favorites")));
+
+        WebElement favoritedRestaurant = favoritesElm.findElement(By.linkText(favRestaurant));
+        favoritedRestaurant.click();
+
+        WebElement removeFavButton = Driver.webDriver.findElement(By.cssSelector(".favorite-button.delete"));
+        removeFavButton.click();
+
+        Gauge.captureScreenshot();
+        Gauge.writeMessage("Removed from favorites list" + favRestaurant);
     }
-
-
-
 }

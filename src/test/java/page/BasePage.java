@@ -1,45 +1,49 @@
 package page;
 
+import driver.Driver;
 import org.openqa.selenium.By;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.WebDriver;
+
+import java.io.*;
 
 public class BasePage {
-    private WebDriverWait webDriverWait;
 
-    private By returnElement(String selector, String selectorType) {
-        By by = null;
-        if (selectorType.equalsIgnoreCase("id"))
-            by = By.id(selector);
-        else if (selectorType.equalsIgnoreCase("classname"))
-            by = By.className(selector);
-        else if (selectorType.equalsIgnoreCase("cssselector"))
-            by = By.cssSelector(selector);
-        else if (selectorType.equalsIgnoreCase("xpath"))
-            by = By.xpath(selector);
+    private  WebDriver webDriver;
 
-        return by;
+    public BasePage() {
+        this.webDriver = Driver.webDriver;
     }
 
-    public void waitUntilExpectedElement(String selector, String selectorType, int... index){
-        By by = returnElement(selector, selectorType);
+    public void clickElement(By selector){
+        webDriver.findElement(selector).click();
+    }
+
+    public void writeData(String text, String fileName) {
+        File FC = new File(fileName);
         try {
-            webDriverWait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(by));
-        } catch (NullPointerException e){
-            throw new RuntimeException("ELEMENT (" + by + (index.length > 0 ? index[0] : "")
-                    + ") NOT EXIST; AUTOMATION DATAS MAY BE INVALID!");
+            FC.createNewFile();
+
+            FileWriter FW = new FileWriter(fileName);
+            BufferedWriter BW = new BufferedWriter(FW);
+            BW.write(text);
+            BW.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
-    public void waitFor(int... timeOut){
-        int timeOutI = 2;
-        if (timeOut.length != 0){
-            timeOutI = timeOut[0];
-        }
+    public String readData(String fileName) {
+        String line = "";
         try {
-            Thread.sleep(timeOutI * 1000L);
-        } catch (InterruptedException e1) {
-            e1.printStackTrace();
+            FileReader fr = new FileReader(fileName);
+            BufferedReader br = new BufferedReader(fr);
+
+            line = br.readLine();
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
+        return line;
     }
 }
